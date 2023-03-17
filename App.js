@@ -19,6 +19,8 @@ const ServerList = () => {
   const [currentTime, setCurrentTime] = useState(''); //현재 시간 상태
   const [timeOffset, setTimeOffset] = useState(0); //현재 시간 - 서버 시간 차이를 계산하고, 옵셋 상태
   const [goalTime, setGoalTime] = useState('00:00:00'); //목표 시간 상태
+  const [nextIdx, setNextIdx] = useState(1); //다음 서버 추가할 때 사용할 인덱스
+
 
   // 현재 시간을 표시하는 함수
   const getCurrentTime = () => {
@@ -41,18 +43,18 @@ const ServerList = () => {
   
   // 새로운 서버 추가
   const handleAddServer = () => {
-    const newServer = { name: serverName, address: serverAddress };
+    const newServer = { name: serverName, address: serverAddress, idx: servers.length };
     setServers([...servers, newServer]);
     setAddModalVisible(false);
     setServerName('');
     setServerAddress('https://');
+    
   };
 
   // 서버 삭제
-  // "servers" 배열에서 "address" 속성값이 주어진 "address"와 일치하지 않는 모든 요소를 선택하여 "newServers" 배열에 새로운 배열로 저장
-  // Address 기준으로 삭제하는게 아니라, 따로 Index를 둬서 삭제하게 코드 수정 필요(bug)
-  const handleDeleteServer = (address) => {
-    const newServers = servers.filter(server => server.address !== address);
+  // "servers" 배열에서 "idx" 속성값이 주어진 "idx"와 일치하지 않는 모든 요소를 선택하여 "newServers" 배열에 새로운 배열로 저장
+  const handleDeleteServer = (idx) => {
+    const newServers = servers.filter(server => server.idx !== idx); // idx로 서버 삭제
     setServers(newServers);
   };
 
@@ -82,7 +84,7 @@ const ServerList = () => {
       <TouchableOpacity onPress={() => handleServerClick(item)}>
         <Text>{item.name}</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => handleDeleteServer(item.address)}>
+      <TouchableOpacity onPress={() => handleDeleteServer(item.idx)}>
         <Text style={{color: 'red'}}>  Delete</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => handleModifyServer(item)}>
@@ -141,7 +143,7 @@ const ServerList = () => {
           />
           <TouchableOpacity onPress={() => {
             const newServers = servers.map(server => {
-            if (server.address === selectedServer.address) {
+            if (server.idx === selectedServer.idx) {
               return {
                 ...server,
                 name: modifiedServerName,
@@ -164,7 +166,11 @@ const ServerList = () => {
       </Modal>
 
       {/* 서버 목록 */}
-      <FlatList data={servers} renderItem={renderItem} />
+      <FlatList
+        data={servers}
+        renderItem={renderItem}
+        keyExtractor={item => item.idx.toString()} // idx를 key로 사용
+      />
 
       {/* 서버 상세 정보 모달 */}
       {selectedServer && (
