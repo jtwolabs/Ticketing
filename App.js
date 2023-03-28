@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Modal, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import { GetServerDate } from './ServerObj'; // ServerObj.js에서 GetServerDate 함수 import
+import { ServerTime } from './ServerTime';
 
 
 const ServerList = () => {
@@ -172,25 +173,13 @@ const ServerList = () => {
         keyExtractor={item => item.idx.toString()} // idx를 key로 사용
       />
 
-      {/* 서버 상세 정보 모달 */}
-      {selectedServer && (
-        <Modal visible={timeModalVisible} animationType="slide">
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Server name: {selectedServer.name}</Text>
-            <Text>Server address: {selectedServer.address}</Text>
-            <Text>Current time: {currentTime}</Text>
-            <TextInput
-              style={{ marginTop: 10, borderWidth: 1, padding: 5, width: 200 }}
-              placeholder="Enter Goal Time"
-              value={goalTime}
-              onChangeText={text => setGoalTime(text)}
-            />
-            <TouchableOpacity onPress={() => setTimeModalVisible(false)}>
-              <Text>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </Modal>
-      )}
+      <ServerTime 
+      timeModalVisible={timeModalVisible} 
+      selectedServer={selectedServer} 
+      currentTime={currentTime} 
+      goalTime={goalTime} 
+      setGoalTime={setGoalTime} 
+      setTimeModalVisible={setTimeModalVisible}/>
     </View>
   );
 };
